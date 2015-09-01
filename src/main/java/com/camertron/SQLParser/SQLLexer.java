@@ -1,6 +1,7 @@
 // Generated from SQLLexer.g by ANTLR 4.2
 package com.camertron.SQLParser;
 
+
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

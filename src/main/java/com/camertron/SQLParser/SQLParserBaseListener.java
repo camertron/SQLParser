@@ -2,6 +2,7 @@
 package com.camertron.SQLParser;
 
 
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -493,6 +494,19 @@ public class SQLParserBaseListener implements SQLParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitHaving_clause(@NotNull SQLParser.Having_clauseContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInsert_value_list(@NotNull SQLParser.Insert_value_listContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInsert_value_list(@NotNull SQLParser.Insert_value_listContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

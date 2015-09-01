@@ -1,6 +1,7 @@
 // Generated from SQLParser.g by ANTLR 4.2
 package com.camertron.SQLParser;
 
+
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -270,6 +271,13 @@ public interface SQLParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitHaving_clause(@NotNull SQLParser.Having_clauseContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link SQLParser#insert_value_list}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInsert_value_list(@NotNull SQLParser.Insert_value_listContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link SQLParser#character_string_type}.

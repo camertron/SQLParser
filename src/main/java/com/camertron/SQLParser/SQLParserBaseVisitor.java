@@ -1,6 +1,7 @@
 // Generated from SQLParser.g by ANTLR 4.2
 package com.camertron.SQLParser;
 
+
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -308,6 +309,14 @@ public class SQLParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> impleme
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitHaving_clause(@NotNull SQLParser.Having_clauseContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitInsert_value_list(@NotNull SQLParser.Insert_value_listContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}

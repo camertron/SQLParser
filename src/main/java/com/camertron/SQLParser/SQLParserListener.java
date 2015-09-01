@@ -1,6 +1,7 @@
 // Generated from SQLParser.g by ANTLR 4.2
 package com.camertron.SQLParser;
 
+
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -415,6 +416,17 @@ public interface SQLParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitHaving_clause(@NotNull SQLParser.Having_clauseContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link SQLParser#insert_value_list}.
+	 * @param ctx the parse tree
+	 */
+	void enterInsert_value_list(@NotNull SQLParser.Insert_value_listContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SQLParser#insert_value_list}.
+	 * @param ctx the parse tree
+	 */
+	void exitInsert_value_list(@NotNull SQLParser.Insert_value_listContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link SQLParser#character_string_type}.
