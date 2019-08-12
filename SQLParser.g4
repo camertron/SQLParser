@@ -35,14 +35,26 @@ options {
 ===============================================================================
 */
 sql
-  : statement (SEMI_COLON)? EOF
+  : (explain_clause)? statement (SEMI_COLON)? EOF
+  ;
+
+explain_clause
+  : EXPLAIN (GLOBAL)?
   ;
 
 statement
-  : data_statement
+  : session_statement
+  | data_statement
   | data_change_statement
   | schema_statement
   | index_statement
+  ;
+
+session_statement
+  : SET CATALOG dbname = identifier
+  | SET TIME ZONE (TO | EQUAL)? (Character_String_Literal | signed_numerical_literal | DEFAULT)
+  | SET (SESSION)? name=identifier (TO | EQUAL)?  (Character_String_Literal | signed_numerical_literal | boolean_literal | DEFAULT)
+  | RESET name=identifier
   ;
 
 data_statement
@@ -54,26 +66,58 @@ data_change_statement
   ;
 
 schema_statement
-  : create_table_statement
+  : database_definition
+  | drop_database_statement
+  | create_table_statement
   | drop_table_statement
+  | alter_tablespace_statement
+  | alter_table_statement
+  | truncate_table_statement
   ;
 
 index_statement
-  : CREATE (u=UNIQUE)? INDEX n=identifier ON t=table_name (m=method_specifier)?
-    LEFT_PAREN s=sort_specifier_list RIGHT_PAREN p=param_clause?
+  : create_index_statement
+  | drop_index_statement
+  ;
+
+create_index_statement
+  : CREATE (u=UNIQUE)? INDEX index_name = identifier ON table_name (method_specifier)?
+    LEFT_PAREN sort_specifier_list RIGHT_PAREN param_clause? (where_clause)? (LOCATION path=Character_String_Literal)?
+  ;
+
+drop_index_statement
+  : DROP INDEX index_name = identifier
+  ;
+
+database_definition
+  : CREATE DATABASE (if_not_exists)? dbname = identifier
+  ;
+
+if_not_exists
+  : IF NOT EXISTS
+  ;
+
+drop_database_statement
+  : DROP DATABASE (if_exists)? dbname = identifier
+  ;
+
+if_exists
+  : IF EXISTS
   ;
 
 create_table_statement
-  : CREATE EXTERNAL TABLE table_name table_elements USING file_type=identifier
-    (param_clause)? (table_partitioning_clauses)? (LOCATION path=Character_String_Literal)
-  | CREATE TABLE table_name table_elements (USING file_type=identifier)?
+  : CREATE EXTERNAL TABLE (if_not_exists)? table_name table_elements (TABLESPACE spacename=identifier)? USING storage_type=identifier
+    (param_clause)? (table_partitioning_clauses)? (LOCATION uri=Character_String_Literal)?
+  | CREATE TABLE (if_not_exists)? table_name table_elements (TABLESPACE spacename=identifier)? (USING storage_type=identifier)?
     (param_clause)? (table_partitioning_clauses)? (AS query_expression)?
-  | CREATE TABLE table_name (USING file_type=identifier)?
+  | CREATE TABLE (if_not_exists)? table_name (TABLESPACE spacename=identifier)? (USING storage_type=identifier)?
     (param_clause)? (table_partitioning_clauses)? AS query_expression
+  | CREATE TABLE (if_not_exists)? table_name LIKE like_table_name=table_name
   ;
 
 table_elements
   : LEFT_PAREN field_element (COMMA field_element)* RIGHT_PAREN
+  | LEFT_PAREN asterisk RIGHT_PAREN
   ;
 
 field_element
@@ -161,14 +205,18 @@ partition_name
   : identifier
   ;
 
+truncate_table_statement
+  : TRUNCATE (TABLE)? table_name (COMMA table_name)*
+  ;
+
 /*
 ===============================================================================
-  11.21 <data types>
+  11.21 <drop table statement>
 ===============================================================================
 */
 
 drop_table_statement
-  : DROP TABLE table_name (PURGE)?
+  : DROP TABLE (if_exists)? table_name (PURGE)?
   ;
 
 /*
@@ -180,14 +228,18 @@ drop_table_statement
 */
 
 identifier
-  : Identifier
+  : Regular_Identifier
   | nonreserved_keywords
+  | Quoted_Identifier
   ;
 
 nonreserved_keywords
-  : AVG
+  : ADD
+  | AVG
+  | ALTER
   | BETWEEN
   | BY
+  | CATALOG
   | CENTURY
   | CHARACTER
   | COALESCE
@@ -195,19 +247,27 @@ nonreserved_keywords
   | COLUMN
   | COUNT
   | CUBE
+  | CUME_DIST
+  | CURRENT
   | DAY
   | DEC
   | DECADE
+  | DEFAULT
+  | DENSE_RANK
   | DOW
   | DOY
   | DROP
   | EPOCH
   | EVERY
   | EXISTS
+  | EXCLUDE
+  | EXPLAIN
   | EXTERNAL
   | EXTRACT
   | FILTER
   | FIRST
+  | FIRST_VALUE
+  | FOLLOWING
   | FORMAT
   | FUSION
   | GROUPING
@@ -218,9 +278,11 @@ nonreserved_keywords
   | ISODOW
   | ISOYEAR
   | LAST
+  | LAST_VALUE
   | LESS
   | LIST
   | LOCATION
+  | MAP
   | MAX
   | MAXVALUE
   | MICROSECONDS
@@ -230,19 +292,32 @@ nonreserved_keywords
   | MINUTE
   | MONTH
   | NATIONAL
+  | NO
   | NULLIF
   | OVERWRITE
+  | OTHERS
   | PARTITION
   | PARTITIONS
+  | PERCENT_RANK
+  | PRECEDING
   | PRECISION
   | PURGE
   | QUARTER
   | RANGE
+  | RANK
+  | RECORD
   | REGEXP
+  | RENAME
+  | REPAIR
+  | RESET
   | RLIKE
   | ROLLUP
+  | ROW
+  | ROWS
+  | ROW_NUMBER
   | SECOND
   | SET
+  | SESSION
   | SIMILAR
   | STDDEV_POP
   | STDDEV_SAMP
@@ -250,11 +325,13 @@ nonreserved_keywords
   | SUM
   | TABLESPACE
   | THAN
+  | TIES
   | TIMEZONE
   | TIMEZONE_HOUR
   | TIMEZONE_MINUTE
   | TRIM
   | TO
+  | UNBOUNDED
   | UNKNOWN
   | VALUES
   | VAR_POP
@@ -284,6 +361,7 @@ nonreserved_keywords
   | INT4
   | INT8
   | INTEGER
+  | INTERVAL
   | NCHAR
   | NUMERIC
   | NVARCHAR
@@ -321,6 +399,7 @@ datetime_literal
   : timestamp_literal
   | time_literal
   | date_literal
+  | interval_literal
   ;
 
 time_literal
@@ -333,6 +412,10 @@ timestamp_literal
 
 date_literal
   : DATE date_string=Character_String_Literal
+  ;
+
+interval_literal
+  : INTERVAL interval_string=Character_String_Literal
   ;
 
 boolean_literal
@@ -358,6 +441,7 @@ predefined_type
   | datetime_type
   | bit_type
   | binary_type
+  | complex_type
   ;
 
 character_string_type
@@ -428,6 +512,7 @@ boolean_type
 
 datetime_type
   : DATE
+  | INTERVAL
   | TIME
   | TIME WITH TIME ZONE
   | TIMETZ
@@ -448,6 +533,24 @@ binary_type
   | VARBINARY type_length?
   ;
 
+complex_type
+  : array_type
+  | record_type
+  | map_type
+  ;
+
+array_type
+  : ARRAY LTH data_type GTH
+  ;
+
+record_type
+  : RECORD table_elements
+  ;
+
+map_type
+  : MAP LTH key_type=data_type COMMA value_type=data_type GTH
+  ;
+
 /*
 ===============================================================================
   6.3 <value_expression_primary>
@@ -466,6 +569,7 @@ nonparenthesized_value_expression_primary
   : unsigned_value_specification
   | column_reference
   | set_function_specification
+  | window_function
   | scalar_subquery
   | case_expression
   | cast_specification
@@ -535,6 +639,36 @@ filter_clause
 
 grouping_operation
   : GROUPING LEFT_PAREN column_reference_list RIGHT_PAREN
+  ;
+
+/*
+===============================================================================
+  6.10 window function
+===============================================================================
+*/
+
+window_function
+  : window_function_type OVER window_name_or_specification
+  ;
+
+window_function_type
+  : rank_function_type LEFT_PAREN RIGHT_PAREN
+  | ROW_NUMBER LEFT_PAREN RIGHT_PAREN
+  | aggregate_function
+  | FIRST_VALUE LEFT_PAREN column_reference RIGHT_PAREN
+  | LAST_VALUE LEFT_PAREN column_reference RIGHT_PAREN
+  | LAG LEFT_PAREN column_reference ( COMMA numeric_value_expression ( COMMA common_value_expression )? )? RIGHT_PAREN
+  | LEAD LEFT_PAREN column_reference ( COMMA numeric_value_expression ( COMMA common_value_expression )? )? RIGHT_PAREN
+  ;
+
+rank_function_type
+  : RANK | DENSE_RANK | PERCENT_RANK | CUME_DIST
+  ;
+
+
+window_name_or_specification
+  : window_name
+  | window_specification
   ;
 
 /*
@@ -611,6 +745,7 @@ value_expression
 common_value_expression
   : numeric_value_expression
   | string_value_expression
+  | datetime_value_expression
   | NULL
   ;
 
@@ -634,10 +769,6 @@ factor
   : (sign)? numeric_primary
   ;
 
-array
-  : LEFT_PAREN numeric_value_expression (COMMA numeric_value_expression )* RIGHT_PAREN
-  ;
-
 numeric_primary
   : value_expression_primary (CAST_EXPRESSION cast_target)*
   | numeric_value_function
@@ -655,6 +786,7 @@ sign
 
 numeric_value_function
   : extract_expression
+  | datetime_value_function
   ;
 
 extract_expression
@@ -672,8 +804,7 @@ time_zone_field
   ;
 
 extract_source
-  : column_reference
-  | datetime_literal
+  : datetime_value_expression
   ;
 
 /*
@@ -724,6 +855,53 @@ trim_specification
 
 /*
 ===============================================================================
+  6.30 <datetime_value_expression>
+===============================================================================
+*/
+datetime_value_expression
+  : datetime_term
+  ;
+datetime_term
+  : datetime_factor
+  ;
+
+datetime_factor
+  : datetime_primary
+  ;
+
+datetime_primary
+  : value_expression_primary
+  | datetime_value_function
+  ;
+
+/*
+===============================================================================
+  6.31 <datetime_value_function>
+===============================================================================
+*/
+
+datetime_value_function
+  : current_date_value_function
+  | current_time_value_function
+  | current_timestamp_value_function
+  ;
+
+current_date_value_function
+  : CURRENT_DATE
+  | CURRENT_DATE LEFT_PAREN RIGHT_PAREN
+  ;
+
+current_time_value_function
+  : CURRENT_TIME
+  | CURRENT_TIME LEFT_PAREN RIGHT_PAREN
+  ;
+
+current_timestamp_value_function
+  : CURRENT_TIMESTAMP
+  ;
+
+/*
+===============================================================================
   6.34 <boolean value expression>
 ===============================================================================
 */
@@ -763,7 +941,7 @@ boolean_primary
   ;
 
 boolean_predicand
-  : parenthesized_boolean_value_expression 
+  : parenthesized_boolean_value_expression
   | nonparenthesized_value_expression_primary
   ;
 
@@ -773,16 +951,12 @@ parenthesized_boolean_value_expression
 
 /*
 ===============================================================================
-  7.2 <row value expression>
+  7.2 <row value expression> (p293)
 ===============================================================================
 */
 row_value_expression
   : row_value_special_case
   | explicit_row_value_constructor
-  ;
-
-row_value_special_case
-  : nonparenthesized_value_expression_primary
   ;
 
 explicit_row_value_constructor
@@ -800,6 +974,10 @@ row_value_constructor_predicand
 //  | explicit_row_value_constructor
   ;
 
+row_value_special_case
+  : nonparenthesized_value_expression_primary
+  ;
+
 /*
 ===============================================================================
   7.4 <table expression>
@@ -812,6 +990,7 @@ table_expression
     groupby_clause?
     having_clause?
     orderby_clause?
+    window_clause?
     limit_clause?
   ;
 
@@ -903,6 +1082,7 @@ named_columns_join
 
 table_primary
   : table_or_query_name ((AS)? alias=identifier)? (LEFT_PAREN column_name_list RIGHT_PAREN)?
+  | LEFT_PAREN table_or_query_name ((AS)? alias=identifier)? (LEFT_PAREN column_name_list RIGHT_PAREN)? RIGHT_PAREN
   | derived_table (AS)? name=identifier (LEFT_PAREN column_name_list RIGHT_PAREN)?
   ;
 
@@ -976,6 +1156,84 @@ row_value_predicand_list
   : row_value_predicand (COMMA row_value_predicand)*
   ;
 
+
+ /*
+ ===============================================================================
+   7.11 <window clause> (p331)
+ ===============================================================================
+ */
+
+window_clause
+  : WINDOW window_definition_list;
+
+window_definition_list
+  : window_definition (COMMA window_definition)*
+  ;
+
+window_definition
+  : window_name AS window_specification
+  ;
+
+window_name
+  : identifier
+  ;
+
+window_specification
+  : LEFT_PAREN window_specification_details RIGHT_PAREN
+  ;
+
+window_specification_details
+  : (existing_window_name)? (window_partition_clause)? (window_order_clause)? (window_frame_clause)?
+  ;
+
+existing_window_name
+  : window_name
+  ;
+
+window_partition_clause
+  : PARTITION BY row_value_predicand_list
+  ;
+
+window_order_clause
+  : orderby_clause
+  ;
+
+window_frame_clause
+  : window_frame_units window_frame_extent (window_frame_exclusion)?
+  ;
+
+window_frame_units
+  : ROWS | RANGE
+  ;
+
+window_frame_extent
+  : window_frame_start_bound
+  | window_frame_between
+  ;
+
+window_frame_start_bound
+  : UNBOUNDED PRECEDING
+  | unsigned_value_specification PRECEDING // window_frame_preceding
+  | CURRENT ROW
+  ;
+
+window_frame_between
+  : BETWEEN bound1=window_frame_start_bound AND bound2=window_frame_end_bound
+  ;
+
+window_frame_end_bound
+  : UNBOUNDED FOLLOWING
+  | unsigned_value_specification FOLLOWING // window_frame_following FOLLOWING
+  | CURRENT ROW
+  ;
+
+window_frame_exclusion
+  : EXCLUDE CURRENT ROW
+  | EXCLUDE GROUP
+  | EXCLUDE TIES
+  | EXCLUDE NO OTHERS
+  ;
+
 /*
 ===============================================================================
   7.13 <query expression>
@@ -1032,7 +1290,11 @@ table_or_query_name
   ;
 
 table_name
-  : identifier  ( DOT  identifier (  DOT identifier )? )?
+  : identifier (DOT identifier ( DOT identifier)? )?
+  ;
+
+column_name
+  : identifier
   ;
 
 query_specification
@@ -1053,7 +1315,11 @@ derived_column
   ;
 
 qualified_asterisk
-  : (tb_name=Identifier DOT)? MULTIPLY
+  : (tb_name=identifier DOT)? asterisk
+  ;
+
+asterisk
+  : MULTIPLY
   ;
 
 set_qualifier
@@ -1062,7 +1328,7 @@ set_qualifier
   ;
 
 column_reference
-  : (tb_name=identifier DOT)? name=identifier
+  : identifier (DOT identifier)*
   ;
 
 as_clause
@@ -1163,7 +1429,7 @@ in_predicate_value
   ;
 
 in_value_list
-  : row_value_expression  ( COMMA row_value_expression )*
+  : row_value_predicand  ( COMMA row_value_predicand )*
   ;
 
 /*
@@ -1328,8 +1594,8 @@ limit_clause
   ;
 
 null_ordering
-  : NULL FIRST
-  | NULL LAST
+  : NULLS FIRST
+  | NULLS LAST
   ;
 
 /*
@@ -1339,10 +1605,53 @@ null_ordering
 */
 
 insert_statement
-  : INSERT (OVERWRITE)? INTO tb_name=table_name (LEFT_PAREN column_name_list RIGHT_PAREN)? (VALUES LEFT_PAREN insert_value_list RIGHT_PAREN)? query_expression?
-  | INSERT (OVERWRITE)? INTO LOCATION path=Character_String_Literal (USING file_type=identifier (param_clause)?)? query_expression
+  : INSERT (OVERWRITE)? INTO table_name (LEFT_PAREN column_reference_list RIGHT_PAREN)? query_expression
+  | INSERT (OVERWRITE)? INTO table_name (LEFT_PAREN column_reference_list RIGHT_PAREN)? VALUES
+    LEFT_PAREN row_value_predicand (COMMA row_value_predicand)* RIGHT_PAREN
+  | INSERT (OVERWRITE)? INTO LOCATION path=Character_String_Literal (USING storage_type=identifier (param_clause)?)? query_expression
   ;
 
-insert_value_list
-  : value_expression  ( COMMA value_expression )*
+/*
+===============================================================================
+  <alter table>
+===============================================================================
+*/
+
+alter_tablespace_statement
+  : ALTER TABLESPACE space_name=identifier LOCATION uri=Character_String_Literal
+  ;
+
+alter_table_statement
+  : ALTER TABLE table_name RENAME TO table_name
+  | ALTER TABLE table_name RENAME COLUMN column_name TO column_name
+  | ALTER TABLE table_name ADD COLUMN field_element
+  | ALTER TABLE table_name ADD (if_not_exists)? PARTITION LEFT_PAREN partition_column_value_list RIGHT_PAREN (LOCATION path=Character_String_Literal)?
+  | ALTER TABLE table_name DROP (if_exists)? PARTITION LEFT_PAREN partition_column_value_list RIGHT_PAREN (PURGE)?
+  | ALTER TABLE table_name SET PROPERTY property_list
+  | ALTER TABLE table_name UNSET PROPERTY property_key_list
+  | ALTER TABLE table_name REPAIR PARTITION
+  ;
+
+partition_column_value_list
+  : partition_column_value (COMMA partition_column_value)*
+  ;
+
+partition_column_value
+  : identifier EQUAL row_value_predicand
+  ;
+
+property_list
+  : property (COMMA property)*
+  ;
+
+property
+  : key=Character_String_Literal EQUAL value=Character_String_Literal
+  ;
+
+property_key_list
+  : property_key (COMMA property_key)*
+  ;
+
+property_key
+  : key=Character_String_Literal
   ;

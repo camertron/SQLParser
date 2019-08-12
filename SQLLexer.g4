@@ -121,12 +121,16 @@ ANY : A N Y;
 ASYMMETRIC : A S Y M M E T R I C;
 ASC : A S C;
 
+
 BOTH : B O T H;
 
 CASE : C A S E;
 CAST : C A S T;
 CREATE : C R E A T E;
 CROSS : C R O S S;
+CURRENT_DATE: C U R R E N T UNDERLINE D A T E;
+CURRENT_TIME: C U R R E N T UNDERLINE T I M E;
+CURRENT_TIMESTAMP: C U R R E N T UNDERLINE T I M E S T A M P;
 
 DESC : D E S C;
 DISTINCT : D I S T I N C T;
@@ -160,11 +164,13 @@ LIMIT : L I M I T;
 NATURAL : N A T U R A L;
 NOT : N O T;
 NULL : N U L L;
+NULLS : N U L L S;
 
 ON : O N;
-OUTER : O U T E R;
 OR : O R;
 ORDER : O R D E R;
+OUTER : O U T E R;
+OVER : O V E R;
 RIGHT : R I G H T;
 SELECT : S E L E C T;
 SOME : S O M E;
@@ -182,6 +188,7 @@ USING : U S I N G;
 WHEN : W H E N;
 WHERE : W H E R E;
 WITH : W I T H;
+WINDOW : W I N D O W;
 
 /*
 ===============================================================================
@@ -189,10 +196,13 @@ WITH : W I T H;
 ===============================================================================
 */
 AVG : A V G;
+ADD: A D D;
+ALTER : A L T E R;
 
 BETWEEN : B E T W E E N;
 BY : B Y;
 
+CATALOG : C A T A L O G;
 CENTURY : C E N T U R Y;
 CHARACTER : C H A R A C T E R;
 COLLECT : C O L L E C T;
@@ -200,38 +210,51 @@ COALESCE : C O A L E S C E;
 COLUMN : C O L U M N;
 COUNT : C O U N T;
 CUBE : C U B E;
+CUME_DIST : C U M E UNDERLINE D I S T;
+CURRENT : C U R R E N T;
 
 DAY : D A Y;
+DEFAULT : D E F A U L T;
+DATABASE : D A T A B A S E;
 DEC : D E C;
 DECADE : D E C A D E;
+DENSE_RANK : D E N S E UNDERLINE R A N K;
 DOW : D O W;
 DOY : D O Y;
 DROP : D R O P;
 
 EPOCH : E P O C H;
 EVERY : E V E R Y;
+EXCLUDE : E X C L U D E;
 EXISTS : E X I S T S;
+EXPLAIN : E X P L A I N;
 EXTERNAL : E X T E R N A L;
 EXTRACT : E X T R A C T;
 
-
 FILTER : F I L T E R;
 FIRST : F I R S T;
+FIRST_VALUE : F I R S T UNDERLINE V A L U E;
+FOLLOWING : F O L L O W I N G;
 FORMAT : F O R M A T;
 FUSION : F U S I O N;
 
+GLOBAL : G L O B A L;
 GROUPING : G R O U P I N G;
 
 HASH : H A S H;
 HOUR : H O U R;
 
+IF : I F;
 INDEX : I N D E X;
 INSERT : I N S E R T;
 INTERSECTION : I N T E R S E C T I O N;
 ISODOW : I S O D O W;
 ISOYEAR : I S O Y E A R;
 
+LAG : L A G;
 LAST : L A S T;
+LAST_VALUE : L A S T UNDERLINE V A L U E;
+LEAD : L E A D;
 LESS : L E S S;
 LIST : L I S T;
 LOCATION : L O C A T I O N;
@@ -247,22 +270,35 @@ MONTH : M O N T H;
 
 NATIONAL : N A T I O N A L;
 NULLIF : N U L L I F;
+NO : N O;
 
 OVERWRITE : O V E R W R I T E;
+OTHERS: O T H E R S;
 
 PARTITION : P A R T I T I O N;
 PARTITIONS : P A R T I T I O N S;
+PERCENT_RANK : P E R C E N T UNDERLINE R A N K;
+PRECEDING : P R E C E D I N G;
 PRECISION : P R E C I S I O N;
 PURGE : P U R G E;
+PROPERTY : P R O P E R T Y;
 
 QUARTER : Q U A R T E R;
 
 RANGE : R A N G E;
+RANK : R A N K;
 REGEXP : R E G E X P;
+RENAME : R E N A M E;
+REPAIR : R E P A I R;
+RESET : R E S E T;
 RLIKE : R L I K E;
 ROLLUP : R O L L U P;
+ROW : R O W;
+ROWS : R O W S;
+ROW_NUMBER :  R O W UNDERLINE N U M B E R;
 
 SECOND : S E C O N D;
+SESSION : S E S S I O N;
 SET : S E T;
 SIMILAR : S I M I L A R;
 STDDEV_POP : S T D D E V UNDERLINE P O P;
@@ -272,13 +308,17 @@ SUM : S U M;
 
 TABLESPACE : T A B L E S P A C E;
 THAN : T H A N;
+TIES : T I E S;
 TIMEZONE: T I M E Z O N E;
 TIMEZONE_HOUR: T I M E Z O N E UNDERLINE H O U R;
 TIMEZONE_MINUTE: T I M E Z O N E UNDERLINE M I N U T E;
 TRIM : T R I M;
 TO : T O;
+TRUNCATE : T R U N C A T E;
 
+UNBOUNDED : U N B O U N D E D;
 UNKNOWN : U N K N O W N;
+UNSET : U N S E T;
 
 VALUES : V A L U E S;
 VAR_SAMP : V A R UNDERLINE S A M P;
@@ -329,6 +369,7 @@ NCHAR : N C H A R;
 NVARCHAR : N V A R C H A R;
 
 DATE : D A T E;
+INTERVAL: I N T E R V A L;
 TIME : T I M E;
 TIMETZ : T I M E T Z;
 TIMESTAMP : T I M E S T A M P;
@@ -341,7 +382,10 @@ VARBINARY : V A R B I N A R Y;
 BLOB : B L O B;
 BYTEA : B Y T E A; // alias for BLOB
 
-INET4 : I N E T '4';
+// complex types
+ARRAY : A R R A Y;
+MAP : M A P;
+RECORD : R E C O R D;
 
 // Operators
 Similar_To : '~';
@@ -403,13 +447,12 @@ LineComment
 ===============================================================================
 */
 
-Identifier
-  : Regular_Identifier
+Regular_Identifier
+  : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|Digit|'_')* { setText(getText().toLowerCase()); }
   ;
 
-fragment
-Regular_Identifier
-  : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|Digit|'_')*
+Quoted_Identifier
+  : DOUBLE_QUOTE ( ESC_SEQ | ~('\\'|'"') )* DOUBLE_QUOTE { setText(getText().substring(1, getText().length()-1)); }
   ;
 
 /*

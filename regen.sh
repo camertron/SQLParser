@@ -1,3 +1,3 @@
 #! /bin/bash
 
-java -jar ./antlr4.jar -o ./src/main/java/com/camertron/SQLParser -visitor -package com.camertron.SQLParser SQLLexer.g SQLParser.g
+mvn exec:java -Dexec.mainClass="org.antlr.v4.Tool" -Dexec.args="-o ./src/main/java/com/camertron/SQLParser -visitor -package com.camertron.SQLParser SQLParser.g4 SQLLexer.g4"
