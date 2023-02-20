@@ -844,6 +844,14 @@ public class SQLParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> impleme
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitPrimary_or_extended_datetime_literal(@NotNull SQLParser.Primary_or_extended_datetime_literalContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitArray_type(@NotNull SQLParser.Array_typeContext ctx) { return visitChildren(ctx); }
 
 	/**

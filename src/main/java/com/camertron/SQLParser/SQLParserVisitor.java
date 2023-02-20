@@ -735,6 +735,13 @@ public interface SQLParserVisitor<T> extends ParseTreeVisitor<T> {
 	T visitStatement(@NotNull SQLParser.StatementContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link SQLParser#primary_or_extended_datetime_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrimary_or_extended_datetime_literal(@NotNull SQLParser.Primary_or_extended_datetime_literalContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link SQLParser#array_type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -1144,6 +1144,17 @@ public interface SQLParserListener extends ParseTreeListener {
 	void exitStatement(@NotNull SQLParser.StatementContext ctx);
 
 	/**
+	 * Enter a parse tree produced by {@link SQLParser#primary_or_extended_datetime_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrimary_or_extended_datetime_literal(@NotNull SQLParser.Primary_or_extended_datetime_literalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SQLParser#primary_or_extended_datetime_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrimary_or_extended_datetime_literal(@NotNull SQLParser.Primary_or_extended_datetime_literalContext ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link SQLParser#array_type}.
 	 * @param ctx the parse tree
 	 */

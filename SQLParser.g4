@@ -415,7 +415,12 @@ date_literal
   ;
 
 interval_literal
-  : INTERVAL interval_string=Character_String_Literal
+  : INTERVAL interval_expression=value_expression_primary interval=primary_or_extended_datetime_literal
+  ;
+
+primary_or_extended_datetime_literal
+  : primary_datetime_field
+  | extended_datetime_field
   ;
 
 boolean_literal
@@ -762,7 +767,7 @@ numeric_value_expression
   ;
 
 term
-  : left=factor ((MULTIPLY|DIVIDE|MODULAR) right=factor)*
+  : left=factor ((MULTIPLY|DIVIDE|MODULAR|INFIX_OPERATOR) right=factor)*
   ;
 
 factor

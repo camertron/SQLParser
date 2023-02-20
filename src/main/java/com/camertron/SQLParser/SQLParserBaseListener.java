@@ -1358,6 +1358,19 @@ public class SQLParserBaseListener implements SQLParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPrimary_or_extended_datetime_literal(@NotNull SQLParser.Primary_or_extended_datetime_literalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPrimary_or_extended_datetime_literal(@NotNull SQLParser.Primary_or_extended_datetime_literalContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterArray_type(@NotNull SQLParser.Array_typeContext ctx) { }
 	/**
 	 * {@inheritDoc}
